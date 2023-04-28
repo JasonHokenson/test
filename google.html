@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>My Website</title>
+	<script>
+		var seconds = 0;
+		var timerId;
+
+		function startTimer() {
+			timerId = setInterval(function() {
+				seconds++;
+				document.getElementById("timer").innerHTML = "Timer: " + seconds + " seconds";
+			}, 1000);
+		}
+
+		function stopTimer() {
+			clearInterval(timerId);
+		}
+	</script>
+	<style>
+		.center {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+			height: 100vh;
+		}
+	</style>
+</head>
+<body>
+	<div class="center">
+		<h1>THIS IS MY WEBSITE</h1>
+		<button onclick="startTimer()">Start Timer</button>
+		<p id="timer"></p>
+		<button onclick="stopTimer()">Stop Timer</button>
+		<form action="https://www.google.com/search" method="get">
+			<input type="text" name="q" placeholder="Search Google">
+			<button type="submit">Search</button>
+		</form>
+	</div>
+</body>
+</html>
