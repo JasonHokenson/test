@@ -1,5 +1,5 @@
 const http = require('http');
-
+const fs = require('fs');
 
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
@@ -55,6 +55,27 @@ const server = http.createServer((req, res) => {
           var listItem = document.createElement("li");
           listItem.appendChild(document.createTextNode(formattedTimeStamp + " - " + ipAddress));
           document.getElementById("time-stamps").appendChild(listItem);
+
+          // Store the timestamp in the JSON file
+          var timeStampObj = {
+            timestamp: formattedTimeStamp,
+            ipAddress: ipAddress
+          };
+          fs.readFile('timestamps.json', function(err, data) {
+            if (err) {
+              console.log(err);
+              return;
+            }
+            var timestamps = JSON.parse(data);
+            timestamps.push(timeStampObj);
+            fs.writeFile('timestamps.json', JSON.stringify(timestamps), function(err) {
+              if (err) {
+                console.log(err);
+                return;
+              }
+              console.log('Timestamp stored in file.');
+            });
+          });
         }
       };
       xhr.open("GET", "https://api.ipify.org/?format=json", true);
@@ -69,6 +90,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(8080, function() {
-	console.log("Server started on port 8080");
-  });
-  
+  console.log("Server started on port 8080");
+});
