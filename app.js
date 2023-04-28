@@ -68,7 +68,7 @@ const server = http.createServer((req, res) => {
 </html>`);
 });
 
-app.listen(8080, function() {
+server.listen(8080, function() {
 	console.log("Server started on port 8080");
   });
   
