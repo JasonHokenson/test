@@ -1,5 +1,7 @@
 const http = require('http');
-const fs = require('fs');
+
+// Initialize the timestamps array
+let timeStamps = [];
 
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
@@ -56,25 +58,10 @@ const server = http.createServer((req, res) => {
           listItem.appendChild(document.createTextNode(formattedTimeStamp + " - " + ipAddress));
           document.getElementById("time-stamps").appendChild(listItem);
 
-          // Store the timestamp in the JSON file
-          var timeStampObj = {
+          // Add the timestamp to the array
+          timeStamps.push({
             timestamp: formattedTimeStamp,
-            ipAddress: ipAddress
-          };
-          fs.readFile('timestamps.json', function(err, data) {
-            if (err) {
-              console.log(err);
-              return;
-            }
-            var timestamps = JSON.parse(data);
-            timestamps.push(timeStampObj);
-            fs.writeFile('timestamps.json', JSON.stringify(timestamps), function(err) {
-              if (err) {
-                console.log(err);
-                return;
-              }
-              console.log('Timestamp stored in file.');
-            });
+            ip: ipAddress
           });
         }
       };
@@ -89,6 +76,13 @@ const server = http.createServer((req, res) => {
 </html>`);
 });
 
+// Create a new endpoint to display the timestamps array
+server.on('/timestamps', function(req, res) {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify(timeStamps));
+});
+
 server.listen(8080, function() {
-  console.log("Server started on port 8080");
+	console.log("Server started on port 8080");
 });
