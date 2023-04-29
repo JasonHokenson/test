@@ -1,6 +1,6 @@
 const http = require('http');
 
-// Initialize the timestamps array
+// initialize the timeStamps array
 let timeStamps = [];
 
 const server = http.createServer((req, res) => {
@@ -18,6 +18,9 @@ const server = http.createServer((req, res) => {
 
   <button onclick="showTimeStamp()">Show Time Stamp</button>
   <ul id="time-stamps"></ul>
+
+  <!-- Add a new div element to display the timeStamps array -->
+  <div id="time-stamps-array"></div>
 
   <script>
     function updateClock() {
@@ -57,12 +60,8 @@ const server = http.createServer((req, res) => {
           var listItem = document.createElement("li");
           listItem.appendChild(document.createTextNode(formattedTimeStamp + " - " + ipAddress));
           document.getElementById("time-stamps").appendChild(listItem);
-
-          // Add the timestamp to the array
-          timeStamps.push({
-            timestamp: formattedTimeStamp,
-            ip: ipAddress
-          });
+          // add the timeStamp to the timeStamps array
+          timeStamps.push(formattedTimeStamp + " - " + ipAddress);
         }
       };
       xhr.open("GET", "https://api.ipify.org/?format=json", true);
@@ -71,18 +70,14 @@ const server = http.createServer((req, res) => {
 
     showIpAddress();
     setInterval(updateClock, 1);
+
+    // populate the time-stamps-array div with the contents of the timeStamps array
+    document.getElementById("time-stamps-array").innerHTML = timeStamps.join("<br>");
   </script>
 </body>
 </html>`);
 });
 
-// Create a new endpoint to display the timestamps array
-server.on('/timestamps', function(req, res) {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify(timeStamps));
-});
-
-server.listen(8080, function() {
-	console.log("Server started on port 8080");
+server.listen(8080, () => {
+  console.log('Server running at http://127.0.0.1:8080/');
 });
