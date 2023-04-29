@@ -1,11 +1,11 @@
 const http = require('http');
 
-// initialize the timeStamps array
-let timeStamps = [];
-
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/html');
+  
+  let timeStamps = JSON.parse(localStorage.getItem('timeStamps') || '[]');
+  
   res.end(`<!DOCTYPE html>
 <html>
 <head>
@@ -18,9 +18,6 @@ const server = http.createServer((req, res) => {
 
   <button onclick="showTimeStamp()">Show Time Stamp</button>
   <ul id="time-stamps"></ul>
-
-  <!-- Add a new div element to display the timeStamps array -->
-  <div id="time-stamps-array"></div>
 
   <script>
     function updateClock() {
@@ -57,27 +54,34 @@ const server = http.createServer((req, res) => {
       xhr.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
           var ipAddress = JSON.parse(this.responseText).ip;
-          var listItem = document.createElement("li");
-          listItem.appendChild(document.createTextNode(formattedTimeStamp + " - " + ipAddress));
-          document.getElementById("time-stamps").appendChild(listItem);
-          // add the timeStamp to the timeStamps array
+          var timeStamps = JSON.parse(localStorage.getItem('timeStamps') || '[]');
           timeStamps.push(formattedTimeStamp + " - " + ipAddress);
+          localStorage.setItem('timeStamps', JSON.stringify(timeStamps));
+          displayTimeStamps(timeStamps);
         }
       };
       xhr.open("GET", "https://api.ipify.org/?format=json", true);
       xhr.send();
     }
 
+    function displayTimeStamps(timeStamps) {
+      var timeStampsList = document.getElementById("time-stamps");
+      timeStampsList.innerHTML = "";
+      timeStamps.forEach(function(timeStamp) {
+        var listItem = document.createElement("li");
+        listItem.appendChild(document.createTextNode(timeStamp));
+        timeStampsList.appendChild(listItem);
+      });
+    }
+
     showIpAddress();
     setInterval(updateClock, 1);
-
-    // populate the time-stamps-array div with the contents of the timeStamps array
-    document.getElementById("time-stamps-array").innerHTML = timeStamps.join("<br>");
+    displayTimeStamps(${JSON.stringify(timeStamps)});
   </script>
 </body>
 </html>`);
 });
 
-server.listen(8080, () => {
-  console.log('Server running at http://127.0.0.1:8080/');
+server.listen(8080, function() {
+	console.log("Server started on port 8080");
 });
